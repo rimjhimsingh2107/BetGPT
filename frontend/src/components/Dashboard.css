@@ -255,6 +255,67 @@
   gap: 1rem;
 }
 
+.detail-grid-with-signals {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.signal-mini {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 2px solid;
+  font-size: 0.85rem;
+}
+
+.signal-mini.news {
+  background: #e3f2fd;
+  border-color: #2196F3;
+}
+
+.signal-mini.crypto {
+  background: #fff3e0;
+  border-color: #FF9800;
+}
+
+.signal-mini.weather {
+  background: #e8f5e9;
+  border-color: #4CAF50;
+}
+
+.signal-mini.sports {
+  background: #fce4ec;
+  border-color: #E91E63;
+}
+
+.signal-mini-icon {
+  font-size: 1.2rem;
+}
+
+.signal-mini-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.signal-mini-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #666;
+  line-height: 1;
+}
+
+.signal-mini-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1e3c72;
+  line-height: 1;
+}
+
 .detail-item {
   background: white;
   padding: 0.75rem;
