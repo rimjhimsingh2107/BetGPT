@@ -1,0 +1,16 @@
+# Dependencies
+frontend/node_modules/
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Build
+frontend/build/
+
+# Logs
+*.log
+npm-debug.log*
