@@ -4,11 +4,11 @@
 
 BetGPT uses artificial intelligence to identify mispriced prediction markets by analyzing sentiment data, external signals, and market metrics in real-time. The system provides actionable trading recommendations backed by transparent, AI-generated reasoning.
 
-###
-**Demo Video:** https://drive.google.com/file/d/1Jpq753l-_vVXtJ_zYafIb6wyC0F_tc0a/view?usp=sharing
-**Tech Video:** https://drive.google.com/file/d/1cbx2sbC1TgHFvm-ogIJcdTOtqURdVRLb/view?usp=sharing
----
+## 🎥 Demo Links
 
+- **Demo Video:** [Watch here](https://drive.google.com/file/d/1Jqp753L-_VVkXJ_zYafI6bwyCF_tc6a/view?usp=sharing)  
+- **Tech Video:** [Watch here](https://drive.google.com/file/d/1cbx2sbC1TgHWm-ogI3clT0tqURdVRbL/view?usp=sharing)
+  
 ## 🌟 Overview
 
 Prediction markets aggregate crowd wisdom, but crowds can be systematically wrong due to emotional bias, incomplete information, and slow adaptation to new data. BetGPT solves this by fusing multiple real-time data sources through AI analysis to detect when markets are mispriced.
