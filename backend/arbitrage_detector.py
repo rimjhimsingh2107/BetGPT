@@ -97,7 +97,8 @@ class ArbitrageDetector:
                 'total_opportunities': 0,
                 'avg_spread': 0,
                 'max_spread': 0,
-                'total_potential_profit': 0
+                'total_potential_profit': 0,
+                'platforms_compared': 2
             }
         
         spreads = [opp['spread_percent'] for opp in opportunities]

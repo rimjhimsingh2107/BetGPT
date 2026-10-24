@@ -5,36 +5,23 @@ import './Analytics.css';
 const COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8'];
 
 function Analytics({ analytics, markets }) {
-  // DEMO: Add variance to the inefficiency history line
-  const enhancedAnalytics = analytics ? {
-    ...analytics,
-    inefficiency_history: analytics.inefficiency_history ? analytics.inefficiency_history.map((point, index) => {
-      // Add realistic variance - simulate market activity patterns
-      const variance = Math.sin(index / 3) * 0.008 + (Math.random() - 0.5) * 0.006;
-      return {
-        ...point,
-        avg_inefficiency: Math.max(0.03, Math.min(0.08, point.avg_inefficiency + variance))
-      };
-    }) : []
-  } : null;
-
-  if (!enhancedAnalytics) {
+  if (!analytics) {
     return <div className="analytics-loading">Loading analytics...</div>;
   }
 
   // Prepare data for charts
-  const categoryData = enhancedAnalytics.categories.map(cat => ({
+  const categoryData = analytics.categories.map(cat => ({
     name: cat.category,
     inefficiency: cat.avg_inefficiency,
     count: cat.count
   }));
 
-  // DEMO: Hardcode action distribution to show variety
-  const pieData = [
-    { name: 'BUY YES', value: 45 },
-    { name: 'SELL NO', value: 28 },
-    { name: 'HOLD', value: 27 }
-  ];
+  const pieData = ['BUY YES', 'SELL NO', 'HOLD']
+    .map(action => ({
+      name: action,
+      value: markets.filter(m => m.recommendation && m.recommendation.action === action).length
+    }))
+    .filter(d => d.value > 0);
 
   return (
     <div className="analytics">
@@ -45,15 +32,15 @@ function Analytics({ analytics, markets }) {
 
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-value">{enhancedAnalytics.total_markets}</div>
+          <div className="stat-value">{analytics.total_markets}</div>
           <div className="stat-label">Total Markets</div>
         </div>
         <div className="stat-card">
-          <div className="stat-value">{(enhancedAnalytics.overall_avg_inefficiency * 100).toFixed(1)}%</div>
+          <div className="stat-value">{(analytics.overall_avg_inefficiency * 100).toFixed(1)}%</div>
           <div className="stat-label">Avg Inefficiency</div>
         </div>
         <div className="stat-card">
-          <div className="stat-value">{enhancedAnalytics.categories.length}</div>
+          <div className="stat-value">{analytics.categories.length}</div>
           <div className="stat-label">Categories</div>
         </div>
       </div>
@@ -98,11 +85,11 @@ function Analytics({ analytics, markets }) {
       </div>
 
       {/* Historical Inefficiency Trend */}
-      {enhancedAnalytics.inefficiency_history && enhancedAnalytics.inefficiency_history.length > 0 && (
+      {analytics.inefficiency_history && analytics.inefficiency_history.length > 0 && (
         <div className="chart-container full-width">
           <h3>📈 Inefficiency Trend Over Time (24 Hours)</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={enhancedAnalytics.inefficiency_history}>
+            <LineChart data={analytics.inefficiency_history}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="timestamp" />
               <YAxis />
@@ -127,7 +114,7 @@ function Analytics({ analytics, markets }) {
       <div className="category-breakdown">
         <h3>Category Deep Dive</h3>
         <div className="category-list">
-          {enhancedAnalytics.categories.map((cat, index) => (
+          {analytics.categories.map((cat, index) => (
             <div key={index} className="category-item">
               <div className="category-name">{cat.category}</div>
               <div className="category-bar">
