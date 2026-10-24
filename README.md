@@ -1,83 +1,91 @@
 # BetGPT
 
-Finds mispriced prediction markets by comparing crowd odds against an
-independent AI estimate.
+A dashboard that looks for mispriced prediction markets. It pulls live markets
+from Polymarket and Manifold, makes its own probability estimate for each one
+from news, crypto and weather data, and ranks the markets by how far the crowd's
+price is from that estimate.
 
-## Overview
+## How it works
 
-Prediction markets aggregate crowd belief, but crowds adapt slowly and stay
-biased in fairly predictable ways. BetGPT pulls live markets from Polymarket
-and Manifold, builds its own probability estimate from several unrelated data
-sources, and scores the gap between the two — weighted by liquidity, because a
-large mispricing in a thin market is not actually tradeable.
+**Getting markets.** The backend fetches about 20 open markets each from
+Polymarket and Manifold and refreshes them every 60 seconds.
 
-Every call comes with the reasoning behind it rather than just a number, so it
-can be argued with instead of taken on faith.
+**Estimating a probability.** For each market it starts from the market's own
+price and nudges it using a few signals:
 
-## How a market is scored
+- news sentiment: recent NewsAPI headlines for the market's keywords, scored
+  with VADER (weight 0.15)
+- crypto: 24-hour BTC/ETH price change from CoinGecko, for crypto markets only
+  (weight 0.10)
+- weather: rain probability from Open-Meteo (for New York), for weather markets
+  only (weight 0.08)
+- politics: a small random placeholder for political markets, standing in for
+  real polling data (weight 0.05)
 
-Four independent signals are fused into a single adjustment, weighted by how
-much predictive value each one carries, then scaled by market liquidity:
+The adjustment is halved for markets with more than $10k of liquidity, a bit of
+random noise is added, and the result is kept between 5% and 95%.
 
-```python
-sentiment_adjustment = (
-    (news_sentiment     * 0.15) +
-    (crypto_sentiment   * 0.10) +
-    (weather_sentiment  * 0.08) +
-    (political_sentiment* 0.05)
-) * liquidity_factor
-```
-
-The signals are deliberately uncorrelated — VADER sentiment over recent news,
-crypto price momentum, weather forecasts, and political indicators — so that
-one noisy source cannot drag the estimate on its own. Weather only carries
-weight where the market actually depends on it.
-
-That estimate is compared against the market's own price:
+**Scoring.** The inefficiency score is the gap between the market price and the
+estimate, scaled up slightly for liquidity:
 
 ```
-inefficiency = |market_prob - ai_prob| x log(1 + liquidity) / 10
+score = min(1, |market_prob - estimate| * (1 + log(1 + liquidity) / 10))
 ```
 
-The logarithm is the important part. A 20-point gap in a deep market is a much
-weaker opportunity than the same gap in a shallow one, because depth is
-what makes a mispricing expensive to exploit. Scoring is normalised to 0-1.
+Scores of 0.6+ are labelled High and 0.3+ Medium. If the estimate is more than
+10 points above the market price it recommends BUY YES, more than 10 points
+below it recommends SELL NO, and otherwise HOLD. Each market also gets a short
+explanation picked from a few templates based on how big the gap is.
 
-Recommendations fall out of the gap: buy when the AI probability exceeds the
-market by 10 points or more, sell when the market overprices by the same
-margin, hold inside that band. Anything under 10 points is treated as noise
-rather than signal.
+**Arbitrage.** Polymarket and Manifold markets with similar titles (75%+ text
+similarity) are paired up, and any pair whose prices differ by 5 points or more
+is flagged.
 
-Reasoning is generated per domain rather than from one generic prompt — a
-crypto market is analysed as a blockchain analyst would (halving cycles, ETF
-flows), a political one as an election forecaster would (polling, demographics),
-and so on for sports, weather and macroeconomic markets.
+**Simulations.** The Portfolio and Performance tabs are simulations, not real
+trades. The portfolio places pretend trades on the top opportunities with a
+fixed 70% win rate. The backtest replays the current markets over 30 days with
+random outcomes, where the chance of winning goes up with the inefficiency
+score. The inefficiency-over-time chart on the Analytics tab is also generated
+from the current markets rather than stored history.
 
-Arbitrage detection runs separately, matching the same underlying question
-across platforms by text similarity and flagging spreads above 5%.
+## Tech stack
 
-Over a 30-day backtest with probabilistic outcomes, the strategy simulated a
-73.6% win rate across 87 trades. That is a simulation on historical markets,
-not live trading.
+- Backend: Python, Flask, VADER sentiment
+- Frontend: React, Recharts
+- Data: Polymarket, Manifold, NewsAPI, CoinGecko, Open-Meteo
 
-## Tech Stack
+## Running it locally
 
-Backend
+You'll need Python 3 and Node.js.
 
-- Python
-- Flask
+1. Copy `backend/.env.example` to `backend/.env`. The Polymarket and Manifold
+   URLs are already filled in. NewsAPI and CoinGecko keys are optional, and
+   without them those signals are just skipped.
 
-AI
+2. Install the backend:
 
-- Claude for market reasoning
-- VADER for sentiment
+   ```bash
+   cd backend
+   pip install -r requirements.txt
+   ```
 
-Frontend
+3. Install the frontend:
 
-- React
-- Recharts
+   ```bash
+   cd frontend
+   npm install
+   ```
 
-Data
+4. From the project root, run:
 
-- Polymarket and Manifold APIs
-- NewsAPI, CoinGecko, OpenMeteo
+   ```bash
+   ./start.sh
+   ```
+
+   The backend runs on http://localhost:5001 and the dashboard opens on
+   http://localhost:3000.
+
+## Links
+
+- [Demo video](https://drive.google.com/file/d/1Jqp753L-_VVkXJ_zYafI6bwyCF_tc6a/view?usp=sharing)
+- [Tech video](https://drive.google.com/file/d/1cbx2sbC1TgHWm-ogI3clT0tqURdVRbL/view?usp=sharing)
