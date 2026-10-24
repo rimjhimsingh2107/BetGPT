@@ -43,11 +43,11 @@ def process_markets():
     """Fetch and process all markets with AI analysis"""
     global portfolio_initialized, backtest_initialized
     
-    print("🔄 Fetching markets...")
+    print("Fetching markets...")
     raw_markets = data_ingestion.fetch_all_markets()
     
     if not raw_markets:
-        print("⚠️ No markets fetched, using cached data")
+        print("No markets fetched, using cached data")
         return markets_cache.get('data', [])
     
     processed_markets = []
@@ -92,7 +92,7 @@ def process_markets():
     if processed_markets and not portfolio_initialized:
         portfolio.create_simulated_trades(processed_markets, threshold=0.10)
         portfolio_initialized = True
-        print("✅ Portfolio initialized with simulated trades")
+        print("Portfolio initialized with simulated trades")
     else:
         # AGENTIC LOOP: Continuously scan for new opportunities and trade
         # This runs every time we fetch fresh markets (every 60 seconds)
@@ -101,16 +101,16 @@ def process_markets():
             if new_opportunities:
                 new_trades_count = portfolio.add_live_trades(new_opportunities[:3])  # Top 3 opportunities
                 if new_trades_count > 0:
-                    print(f"🤖 AI Agent created {new_trades_count} new trades based on inefficiencies")
+                    print(f"AI Agent created {new_trades_count} new trades based on inefficiencies")
     
     # Run backtest (only once)
     if processed_markets and not backtest_initialized:
-        print("🔬 Running backtest simulation...")
+        print("Running backtest simulation...")
         backtester.run_backtest(processed_markets, days=30)
         backtest_initialized = True
-        print("✅ Backtest complete - 30 days simulated")
+        print("Backtest complete - 30 days simulated")
     
-    print(f"✅ Processed {len(processed_markets)} markets")
+    print(f"Processed {len(processed_markets)} markets")
     return processed_markets
 
 @app.route('/api/markets', methods=['GET'])
@@ -161,7 +161,7 @@ def get_analytics():
     # Record current snapshot for history
     inefficiency_tracker.record_snapshot(markets)
     
-    # Get inefficiency history (generate mock for demo)
+    # inefficiency history is simulated from current markets
     history = inefficiency_tracker.generate_mock_history(markets, hours=24)
     
     # Category analysis
@@ -284,10 +284,10 @@ def health_check():
     })
 
 if __name__ == '__main__':
-    print("🚀 BetGPT Backend Starting...")
-    print("📊 Dashboard will be available at: http://localhost:3000")
-    print("🔌 API running on: http://localhost:5001")
-    print("\n📡 Available endpoints:")
+    print("BetGPT Backend Starting...")
+    print("Dashboard will be available at: http://localhost:3000")
+    print("API running on: http://localhost:5001")
+    print("\nAvailable endpoints:")
     print("   GET /api/markets - Market data with AI analysis")
     print("   GET /api/analytics - Aggregate analytics")
     print("   GET /api/portfolio - Simulated portfolio & trades")

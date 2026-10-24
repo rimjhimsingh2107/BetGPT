@@ -23,7 +23,7 @@ class SimulatedPortfolio:
                 # Determine trade action
                 action = market['recommendation']['action']
                 
-                # Simulate trade outcome (70% win rate for demo)
+                # simulated outcome with a fixed 70% win rate
                 is_winner = random.random() < 0.70
                 
                 # Calculate P&L

@@ -128,7 +128,7 @@ class PredictionModel:
             (weather_sentiment * 0.08)
         ) * liquidity_factor
         
-        # Add some randomness to simulate uncertainty (smaller for demo)
+        # random noise to simulate uncertainty
         random_noise = random.uniform(-0.08, 0.08)
         
         # Calculate final probability
@@ -152,13 +152,12 @@ class PredictionModel:
         }
     
     def _generate_reasoning(self, market, news_sent, crypto_sent, pol_sent, ai_prob, liq_factor, weather_sent=0):
-        """Generate human-readable reasoning - DEMO ENHANCED"""
+        """Generate human-readable reasoning"""
         market_prob = market['market_prob']
         diff = ai_prob - market_prob
         
         reasons = []
         
-        # DEMO: Make reasoning more impressive
         if abs(diff) > 0.08:
             if diff > 0:
                 return "Strong positive sentiment detected across multiple news sources with bullish market indicators. Analysis shows the crowd may be underestimating probability due to low information flow and limited liquidity allowing for mispricing."

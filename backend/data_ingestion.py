@@ -23,7 +23,7 @@ class DataIngestion:
                 markets = response.json()
                 # Filter for markets with actual prices
                 active_markets = [m for m in markets if m.get('lastTradePrice') or m.get('bestBid')]
-                return self._normalize_polymarket(active_markets[:20])  # Limit for demo
+                return self._normalize_polymarket(active_markets[:20])
             return []
         except Exception as e:
             print(f"Error fetching Polymarket: {e}")
